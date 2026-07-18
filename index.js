@@ -54,3 +54,26 @@ app.get('/tasks/:id', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// 3. POST /tasks - Create a new task
+app.post('/tasks', (req, res) => {
+  const { title } = req.body;
+
+  // VALIDATION: Check if title is missing or empty
+  if (!title || title.trim() === '') {
+    return res.status(400).json({ error: "Title is required and cannot be empty" });
+  }
+
+  // Create the new task
+  const newTask = {
+    id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1, // Get next available ID
+    title: title.trim(),
+    done: false
+  };
+
+  // Add it to our in-memory database
+  tasks.push(newTask);
+
+  // Return 201 Created with the new task
+  res.status(201).json(newTask);
+});

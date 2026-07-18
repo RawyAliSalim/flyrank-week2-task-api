@@ -2,7 +2,10 @@
 const express = require('express');
 const app = express();
 const PORT = 3000;
-
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./openapi.json'); 
+// Serve Swagger UI at /docs
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Middleware to parse JSON bodies
 app.use(express.json());
 

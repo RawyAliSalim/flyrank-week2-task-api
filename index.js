@@ -77,3 +77,50 @@ app.post('/tasks', (req, res) => {
   // Return 201 Created with the new task
   res.status(201).json(newTask);
 });
+
+
+// 4. PUT /tasks/:id - Update an existing task
+app.put('/tasks/:id', (req, res) => {
+  const taskId = parseInt(req.params.id);
+  const { title, done } = req.body;
+
+  // Find the task's index in the array
+  const taskIndex = tasks.findIndex(t => t.id === taskId);
+
+  // If not found, return 404
+  if (taskIndex === -1) {
+    return res.status(404).json({ error: `Task ${taskId} not found` });
+  }
+
+  // Validation: if title is provided, it must not be empty
+  if (title !== undefined && title.trim() === '') {
+    return res.status(400).json({ error: "Title cannot be empty" });
+  }
+
+  // Update the task (only update the fields that were provided)
+  tasks[taskIndex] = {
+    ...tasks[taskIndex],
+    ...(title !== undefined && { title: title.trim() }),
+    ...(done !== undefined && { done })
+  };
+
+  // Return the updated task with 200 OK
+  res.json(tasks[taskIndex]);
+});
+
+// 5. DELETE /tasks/:id - Delete a task
+app.delete('/tasks/:id', (req, res) => {
+  const taskId = parseInt(req.params.id);
+  const taskIndex = tasks.findIndex(t => t.id === taskId);
+
+  // If not found, return 404
+  if (taskIndex === -1) {
+    return res.status(404).json({ error: `Task ${taskId} not found` });
+  }
+
+  // Remove the task from the array
+  tasks.splice(taskIndex, 1);
+
+  // Return 204 No Content (success, but empty body)
+  res.status(204).send();
+});
